@@ -3,6 +3,8 @@ import logging
 import numpy as np
 import tensorflow as tf
 
+from tracking import UnitObject
+from typing import List
 from .base_detector import BaseDetector
 
 LOGGER = logging.getLogger(__name__)
@@ -25,9 +27,11 @@ PATH_TO_CKPT = '.models/ssd_mobilenet_v1_coco_11_06_2017/frozen_inference_graph.
 #                   13: {'id': 13, 'name': u'stop sign'},
 #                   14: {'id': 14, 'name': u'parking meter'}}
 
-class CarDetector(BaseDetector):
+class Detector(BaseDetector):
     def __init__(self):
         super().__init__()
+
+        self.classes_to_detect = [3]
 
         self.detection_graph = tf.Graph()
         config = tf.ConfigProto()
@@ -47,7 +51,7 @@ class CarDetector(BaseDetector):
             self.classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
             self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
 
-    def get_localization(self, image, debug=False):
+    def get_localization(self, image, debug=False) -> List[UnitObject]:
         with self.detection_graph.as_default():
             image_expanded = np.expand_dims(image, axis=0)
             (boxes, scores, classes, num_detections) = self.sess.run(
@@ -58,30 +62,32 @@ class CarDetector(BaseDetector):
             classes = np.squeeze(classes)
             scores = np.squeeze(scores)
 
-            cls = classes.tolist()
+            cls = classes.astype(int).tolist()
 
-            # The ID for car in COCO data set is 3
-            idx_vec = [i for i, v in enumerate(cls) if ((v == 3) and (scores[i] > 0.3))]
             tmp_car_boxes = []
+            for (idx, score, box_) in zip(cls, scores, boxes):
+                if idx not in self.classes_to_detect or score <= 0.3:
+                    continue
 
-            if len(idx_vec) == 0:
-                LOGGER.debug('no detector!')
-            else:
-                for idx in idx_vec:
-                    dim = image.shape[0:2]
-                    box = self.box_normal_to_pixel(boxes[idx], dim)
-                    box_h = box[2] - box[0]
-                    box_w = box[3] - box[1]
-                    ratio = box_h / (box_w + 0.01)
+                dim = image.shape[0:2]
+                box = self.box_normal_to_pixel(box_, dim)
+                unit_object = UnitObject(box, idx)
 
-                    if (ratio < 0.8) and (box_h > 20) and (box_w > 20):
-                        tmp_car_boxes.append(box)
-                        LOGGER.debug(str(box) + ', confidence: ' + str(scores[idx]) + 'ratio:' + str(ratio))
+                box = unit_object.box
+                box_h = box[2] - box[0]
+                box_w = box[3] - box[1]
+                ratio = box_h / (box_w + 0.01)
 
-                    else:
-                        LOGGER.debug('wrong ratio or wrong size, ' + str(box) + ', confidence: ' + str(
-                            scores[idx]) + 'ratio:' + str(ratio))
+                LOGGER.debug(str(box) + ', confidence: ' + str(score) + 'ratio:' + str(ratio))
+                if (ratio < 0.8) and (box_h > 20) and (box_w > 20):
+                    tmp_car_boxes.append(unit_object)
+                    LOGGER.debug('valid box')
+                else:
+                    LOGGER.debug('wrong ratio or wrong size')
 
-                self.car_boxes = tmp_car_boxes
+        if len(tmp_car_boxes) == 0:
+            LOGGER.debug('no detector!')
+
+        self.car_boxes = tmp_car_boxes
 
         return self.car_boxes
