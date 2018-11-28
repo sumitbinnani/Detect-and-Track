@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List
 
 import numpy as np
@@ -10,28 +11,27 @@ from .base_detector import BaseDetector
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.WARN)
 
-PATH_TO_CKPT = '.models/ssd_mobilenet_v1_coco_11_06_2017/frozen_inference_graph.pb'
+PATH_TO_CKPT = os.path.join(os.path.dirname(__file__), 'ssd_mobilenet_v1_coco_11_06_2017', 'frozen_inference_graph.pb')
 
-
-# category_index = {1: {'id': 1, 'name': u'person'},
-#                   2: {'id': 2, 'name': u'bicycle'},
-#                   3: {'id': 3, 'name': u'car'},
-#                   4: {'id': 4, 'name': u'motorcycle'},
-#                   5: {'id': 5, 'name': u'airplane'},
-#                   6: {'id': 6, 'name': u'bus'},
-#                   7: {'id': 7, 'name': u'train'},
-#                   8: {'id': 8, 'name': u'truck'},
-#                   9: {'id': 9, 'name': u'boat'},
-#                   10: {'id': 10, 'name': u'traffic light'},
-#                   11: {'id': 11, 'name': u'fire hydrant'},
-#                   13: {'id': 13, 'name': u'stop sign'},
-#                   14: {'id': 14, 'name': u'parking meter'}}
 
 class Detector(BaseDetector):
     def __init__(self):
         super().__init__()
 
-        self.classes_to_detect = [1, 3]
+        self.classes_to_detect = list(range(1, 15))
+        self.class_names = {1: u'person',
+                            2: u'bicycle',
+                            3: u'car',
+                            4: u'motorcycle',
+                            5: u'airplane',
+                            6: u'bus',
+                            7: u'train',
+                            8: u'truck',
+                            9: u'boat',
+                            10: u'traffic light',
+                            11: u'fire hydrant',
+                            13: u'stop sign',
+                            14: u'parking meter'}
 
         self.detection_graph = tf.Graph()
         config = tf.ConfigProto()
