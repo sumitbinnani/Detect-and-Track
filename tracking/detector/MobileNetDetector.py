@@ -59,19 +59,18 @@ class Detector(BaseDetector):
                 feed_dict={self.image_tensor: image_expanded})
 
             boxes = np.squeeze(boxes)
-            classes = np.squeeze(classes)
+            classes = np.squeeze(classes).astype(int).tolist()
             scores = np.squeeze(scores)
 
-            cls = classes.astype(int).tolist()
 
             tmp_car_boxes = []
-            for (idx, score, box_) in zip(cls, scores, boxes):
-                if idx not in self.classes_to_detect or score <= 0.3:
+            for (cls, score, box_) in zip(classes, scores, boxes):
+                if cls not in self.classes_to_detect or score <= 0.3:
                     continue
 
                 dim = image.shape[0:2]
                 box = self.box_normal_to_pixel(box_, dim)
-                unit_object = UnitObject(box, idx)
+                unit_object = UnitObject(box, cls)
 
                 box = unit_object.box
                 box_h = box[2] - box[0]
