@@ -1,10 +1,14 @@
-import numpy as np
 from abc import ABC, abstractmethod
+from typing import List
+
+import numpy as np
+
+from tracking import UnitObject
 
 
 class BaseDetector(ABC):
     def __init__(self):
-        self.car_boxes = []
+        self.car_boxes: List[UnitObject] = []
 
     @staticmethod
     def box_normal_to_pixel(box, dim):
@@ -19,7 +23,7 @@ class BaseDetector(ABC):
         return np.array(box_pixel)
 
     @abstractmethod
-    def get_localization(self, image, debug=False):
+    def get_localization(self, image, debug=False) -> List[UnitObject]:
         """
         Find location of car in the image
         :param image: input image

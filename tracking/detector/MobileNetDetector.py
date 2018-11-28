@@ -1,10 +1,10 @@
 import logging
+from typing import List
 
 import numpy as np
 import tensorflow as tf
 
 from tracking import UnitObject
-from typing import List
 from .base_detector import BaseDetector
 
 LOGGER = logging.getLogger(__name__)
@@ -61,7 +61,6 @@ class Detector(BaseDetector):
             boxes = np.squeeze(boxes)
             classes = np.squeeze(classes).astype(int).tolist()
             scores = np.squeeze(scores)
-
 
             tmp_car_boxes = []
             for (cls, score, box_) in zip(classes, scores, boxes):
