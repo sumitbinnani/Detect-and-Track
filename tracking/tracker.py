@@ -13,7 +13,7 @@ class Tracker:
     def __init__(self):
         # Initialize parameters for tracker (history)
         self.tracking_id = 0  # tracker's id
-        self.unit_object = UnitObject() # unit tracker
+        self.unit_object = UnitObject()  # unit tracker
         self.hits = 0  # number of detector matches
         self.no_losses = 0  # number of unmatched tracks (track loss)
 
