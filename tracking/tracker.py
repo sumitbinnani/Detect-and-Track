@@ -2,6 +2,8 @@ import numpy as np
 from numpy import dot
 from scipy.linalg import inv, block_diag
 
+from tracking import UnitObject
+
 
 class Tracker:
     """
@@ -10,8 +12,8 @@ class Tracker:
 
     def __init__(self):
         # Initialize parameters for tracker (history)
-        self.id = 0  # tracker's id 
-        self.box = []  # list to store the coordinates for a bounding box
+        self.tracking_id = 0  # tracker's id
+        self.unit_object = UnitObject() # unit tracker
         self.hits = 0  # number of detector matches
         self.no_losses = 0  # number of unmatched tracks (track loss)
 

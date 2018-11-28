@@ -6,7 +6,7 @@ class UnitObject:
         :param id: type of classification
         """
         self.box = box
-        self.idx = idx
+        self.class_id = idx
 
     def __str__(self):
-        return str(self.idx) + ": " + str(self.box)
+        return str(self.class_id) + ": " + str(self.box)
