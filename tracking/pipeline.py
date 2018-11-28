@@ -34,16 +34,17 @@ class DetectAndTrack:
 
         self.frame_count += 1
 
-        z_box = self.detector.get_localization(img)  # measurement
+        unit_detections = self.detector.get_localization(img)  # measurement
 
         x_box = []
 
         for trk in self.tracker_list:
             x_box.append(trk.box)
 
-        matched, unmatched_dets, unmatched_trks = self.assign_detections_to_trackers(x_box, z_box, iou_thrd=0.3)
+        matched, unmatched_dets, unmatched_trks = self.assign_detections_to_trackers(x_box, unit_detections,
+                                                                                     iou_thrd=0.3)
 
-        LOGGER.debug('Detection: ' + str(z_box))
+        LOGGER.debug('Detection: ' + str(unit_detections))
         LOGGER.debug('x_box: ' + str(x_box))
         LOGGER.debug('matched:' + str(matched))
         LOGGER.debug('unmatched_det:' + str(unmatched_dets))
@@ -51,7 +52,7 @@ class DetectAndTrack:
 
         # Matched Detections
         for trk_idx, det_idx in matched:
-            z = z_box[det_idx]
+            z = unit_detections[det_idx].box
             z = np.expand_dims(z, axis=0).T
             tmp_trk = self.tracker_list[trk_idx]
             tmp_trk.kalman_filter(z)
@@ -64,7 +65,7 @@ class DetectAndTrack:
 
         # Unmatched Detections
         for idx in unmatched_dets:
-            z = z_box[idx]
+            z = unit_detections[idx].box
             z = np.expand_dims(z, axis=0).T
             tmp_trk = Tracker()  # Create a new tracker
             x = np.array([[z[0], 0, z[1], 0, z[2], 0, z[3], 0]]).T
@@ -108,18 +109,18 @@ class DetectAndTrack:
         return img
 
     @staticmethod
-    def assign_detections_to_trackers(trackers, detections, iou_thrd=0.3):
+    def assign_detections_to_trackers(trackers, unit_detections, iou_thrd=0.3):
         """
         Matches Trackers and Detections
         :param trackers: trackers
-        :param detections: detections
+        :param unit_detections: detections
         :param iou_thrd: threshold to qualify as a match
         :return: matches, unmatched_detections, unmatched_trackers
         """
-        IOU_mat = np.zeros((len(trackers), len(detections)), dtype=np.float32)
+        IOU_mat = np.zeros((len(trackers), len(unit_detections)), dtype=np.float32)
         for t, trk in enumerate(trackers):
-            for d, det in enumerate(detections):
-                IOU_mat[t, d] = utils.box_utils.calculate_iou(trk, det)
+            for d, det in enumerate(unit_detections):
+                IOU_mat[t, d] = utils.box_utils.calculate_iou(trk, det.box)
 
         # Finding Matches using Hungarian Algorithm
         matched_idx = linear_assignment(-IOU_mat)
@@ -129,7 +130,7 @@ class DetectAndTrack:
             if t not in matched_idx[:, 0]:
                 unmatched_trackers.append(t)
 
-        for d, det in enumerate(detections):
+        for d, det in enumerate(unit_detections):
             if d not in matched_idx[:, 1]:
                 unmatched_detections.append(d)
 

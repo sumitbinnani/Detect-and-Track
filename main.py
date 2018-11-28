@@ -3,13 +3,13 @@ import time
 from moviepy.editor import VideoFileClip
 
 from tracking.pipeline import DetectAndTrack
-from tracking.detector.MobileNetDetector import CarDetector
+from tracking.detector.MobileNetDetector import Detector
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
-    detector = CarDetector()
+    detector = Detector()
     detect_and_track = DetectAndTrack(detector)
     start = time.time()
     output = 'test_output.mp4'
