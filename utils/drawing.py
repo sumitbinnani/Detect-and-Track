@@ -1,35 +1,33 @@
+import os
+import pickle
+
 import cv2
 
 from tracking.tracker import Tracker
 
+pallete_path = os.path.join(os.path.dirname(__file__), "pallete")
+box_colors = pickle.load(open(pallete_path, "rb"))
 
-def draw_box_label(img, tracker: Tracker, show_label=True):
+
+def draw_box_label(img, tracker: Tracker, class_names, show_label=True):
     """
     Draw Bounding Box
     :param img: input image
-    :param bbox_cv2: left, top, right, bottom
-    :param box_color: color of the box
+    :param tracker: left, top, right, bottom
+    :param class_names: name of the class
     :param show_label: whether to show labels
     :return: img with bounding box
     """
-    # box_color= (0, 255, 255)
-    box_colors = {3: (0, 255, 255), 1: (0, 0, 255)}
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_size = 0.7
-    font_color = (0, 0, 0)
-    box_color = box_colors[tracker.unit_object.class_id]
-    bbox_cv2 = tracker.unit_object.box
-
-    left, top, right, bottom = bbox_cv2[1], bbox_cv2[0], bbox_cv2[3], bbox_cv2[2]
-
-    # Draw the bounding box
-    cv2.rectangle(img, (left, top), (right, bottom), box_color, 2)
-
-    if show_label:
-        # Draw a filled box on top of the bounding box (as the background for the labels)
-        cv2.rectangle(img, (left - 2, top - 45), (right + 2, top), box_color, -1, 1)
-
-        text = str(tracker.tracking_id)
-        cv2.putText(img, text, (left, top - 5), font, font_size, font_color, 1, cv2.LINE_AA)
-
+    unit_object = tracker.unit_object
+    x = unit_object.box
+    c1 = (x[1], x[0])
+    c2 = (x[3], x[2])
+    cls = unit_object.class_id
+    label = "{0}:{1}".format(tracker.tracking_id, class_names[cls])
+    color = box_colors[cls]
+    cv2.rectangle(img, c1, c2, color, 1)
+    t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1, 1)[0]
+    c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
+    cv2.rectangle(img, c1, c2, color, -1)
+    cv2.putText(img, label, (c1[0], c1[1] + t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 1, [225, 255, 255], 1)
     return img

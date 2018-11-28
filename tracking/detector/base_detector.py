@@ -9,6 +9,7 @@ from tracking import UnitObject
 class BaseDetector(ABC):
     def __init__(self):
         self.car_boxes: List[UnitObject] = []
+        self.class_names = {}
 
     @staticmethod
     def box_normal_to_pixel(box, dim):

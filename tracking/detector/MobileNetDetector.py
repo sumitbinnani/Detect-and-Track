@@ -18,20 +18,20 @@ class Detector(BaseDetector):
     def __init__(self):
         super().__init__()
 
-        self.classes_to_detect = list(range(1,15))
-        self.classes = {1: u'person',
-                        2: u'bicycle',
-                        3: u'car',
-                        4: u'motorcycle',
-                        5: u'airplane',
-                        6: u'bus',
-                        7: u'train',
-                        8: u'truck',
-                        9: u'boat',
-                        10: u'traffic light',
-                        11: u'fire hydrant',
-                        13: u'stop sign',
-                        14: u'parking meter'}
+        self.classes_to_detect = list(range(1, 15))
+        self.class_names = {1: u'person',
+                            2: u'bicycle',
+                            3: u'car',
+                            4: u'motorcycle',
+                            5: u'airplane',
+                            6: u'bus',
+                            7: u'train',
+                            8: u'truck',
+                            9: u'boat',
+                            10: u'traffic light',
+                            11: u'fire hydrant',
+                            13: u'stop sign',
+                            14: u'parking meter'}
 
         self.detection_graph = tf.Graph()
         config = tf.ConfigProto()
