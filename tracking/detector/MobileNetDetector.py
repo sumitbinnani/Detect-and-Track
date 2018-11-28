@@ -31,7 +31,7 @@ class Detector(BaseDetector):
     def __init__(self):
         super().__init__()
 
-        self.classes_to_detect = [3]
+        self.classes_to_detect = [1, 3]
 
         self.detection_graph = tf.Graph()
         config = tf.ConfigProto()
@@ -77,7 +77,10 @@ class Detector(BaseDetector):
                 ratio = box_h / (box_w + 0.01)
 
                 LOGGER.debug(str(box) + ', confidence: ' + str(score) + 'ratio:' + str(ratio))
-                if (ratio < 0.8) and (box_h > 20) and (box_w > 20):
+                if cls == 3 and (ratio < 0.8) and (box_h > 20) and (box_w > 20):
+                    tmp_car_boxes.append(unit_object)
+                    LOGGER.debug('valid box')
+                elif (ratio > 0.6) and cls == 1:
                     tmp_car_boxes.append(unit_object)
                     LOGGER.debug('valid box')
                 else:

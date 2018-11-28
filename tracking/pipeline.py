@@ -100,8 +100,7 @@ class DetectAndTrack:
         for trk in self.tracker_list:
             if (trk.hits >= self.min_hits) and (trk.no_losses <= self.max_age):
                 good_tracker_list.append(trk)
-                x_cv2 = trk.unit_object.box
-                img = utils.drawing.draw_box_label(img, x_cv2)  # Draw the bounding boxes on the
+                img = utils.drawing.draw_box_label(img, trk)  # Draw the bounding boxes on the
 
         # Manage Tracks to be deleted
         deleted_tracks = filter(lambda x: x.no_losses > self.max_age, self.tracker_list)
