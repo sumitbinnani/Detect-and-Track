@@ -100,8 +100,7 @@ class DetectAndTrack:
         for trk in self.tracker_list:
             if (trk.hits >= self.min_hits) and (trk.no_losses <= self.max_age):
                 good_tracker_list.append(trk)
-                x_cv2 = trk.unit_object.box
-                img = utils.drawing.draw_box_label(img, x_cv2)  # Draw the bounding boxes on the
+                img = utils.drawing.draw_box_label(img, trk)  # Draw the bounding boxes on the
 
         # Manage Tracks to be deleted
         deleted_tracks = filter(lambda x: x.no_losses > self.max_age, self.tracker_list)
@@ -125,7 +124,8 @@ class DetectAndTrack:
         IOU_mat = np.zeros((len(unit_trackers), len(unit_detections)), dtype=np.float32)
         for t, trk in enumerate(unit_trackers):
             for d, det in enumerate(unit_detections):
-                IOU_mat[t, d] = utils.box_utils.calculate_iou(trk.box, det.box)
+                if trk.class_id == det.class_id:
+                    IOU_mat[t, d] = utils.box_utils.calculate_iou(trk.box, det.box)
 
         # Finding Matches using Hungarian Algorithm
         matched_idx = linear_assignment(-IOU_mat)
