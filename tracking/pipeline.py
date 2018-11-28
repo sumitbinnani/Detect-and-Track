@@ -1,11 +1,14 @@
 import logging
 from collections import deque
+from typing import List
 
 import numpy as np
 from sklearn.utils.linear_assignment_ import linear_assignment
 
 import utils.box_utils
 import utils.drawing
+from tracking import UnitObject
+from tracking.detector.base_detector import BaseDetector
 from tracking.tracker import Tracker
 
 LOGGER = logging.getLogger(__name__)
@@ -21,9 +24,9 @@ class DetectAndTrack:
         self.max_age = 4
         self.min_hits = 1
         self.frame_count = 0
-        self.tracker_list = []
+        self.tracker_list: List[Tracker] = []
         self.track_id_list = deque(list(map(str, range(100))))
-        self.detector = detector
+        self.detector: BaseDetector = detector
 
     def pipeline(self, img):
         """
@@ -109,7 +112,7 @@ class DetectAndTrack:
         return img
 
     @staticmethod
-    def assign_detections_to_trackers(trackers, unit_detections, iou_thrd=0.3):
+    def assign_detections_to_trackers(trackers: List[UnitObject], unit_detections: List[UnitObject], iou_thrd=0.3):
         """
         Matches Trackers and Detections
         :param trackers: trackers
