@@ -51,7 +51,7 @@ class Detector(BaseDetector):
             self.classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
             self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
 
-    def get_localization(self, image, debug=False) -> List[UnitObject]:
+    def get_detections(self, image, debug=False) -> List[UnitObject]:
         with self.detection_graph.as_default():
             image_expanded = np.expand_dims(image, axis=0)
             (boxes, scores, classes, num_detections) = self.sess.run(

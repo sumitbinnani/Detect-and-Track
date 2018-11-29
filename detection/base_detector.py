@@ -24,7 +24,7 @@ class BaseDetector(ABC):
         return np.array(box_pixel)
 
     @abstractmethod
-    def get_localization(self, image, debug=False) -> List[UnitObject]:
+    def get_detections(self, image, debug=False) -> List[UnitObject]:
         """
         Find location of car in the image
         :param image: input image

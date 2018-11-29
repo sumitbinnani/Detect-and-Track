@@ -43,7 +43,7 @@ class Detector(BaseDetector):
         model.eval()
         self.model = model
 
-    def get_localization(self, image, debug=False) -> List[UnitObject]:
+    def get_detections(self, image, debug=False) -> List[UnitObject]:
         ret = []
         im_batch = prep_frame(image, self.inp_dim)
         im_dim_list = [image.shape[1], image.shape[0]]

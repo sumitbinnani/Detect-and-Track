@@ -38,7 +38,7 @@ class DetectAndTrack:
 
         self.frame_count += 1
 
-        unit_detections = self.detector.get_localization(img)  # measurement
+        unit_detections = self.detector.get_detections(img)  # measurement
 
         unit_trackers = []
 
