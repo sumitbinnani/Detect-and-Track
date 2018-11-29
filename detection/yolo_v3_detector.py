@@ -15,16 +15,16 @@ from .yolov3.yolov3.util import load_classes, write_results
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
-BASE_PATH = os.path.join(os.path.dirname(__file__), 'yolov3', 'yolov3')
+BASE_PATH = os.path.join(os.path.dirname(__file__), 'yolov3')
 
 
 class Detector(BaseDetector):
     cfg = os.path.join(BASE_PATH, 'cfg', 'yolov3.cfg')
-    weights = os.path.join(BASE_PATH, 'yolov3.weights')
+    weights = os.path.join(BASE_PATH, 'weights', 'yolov3.weights')
 
     def __init__(self):
         super().__init__()
-        self.class_names = load_classes(os.path.join(BASE_PATH, 'data/coco.names'))
+        self.class_names = load_classes(os.path.join(BASE_PATH, 'data', 'coco.names'))
         self.num_classes = 80
         self.batch_size = 1
         self.confidence = 0.5
