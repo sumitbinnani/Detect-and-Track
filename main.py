@@ -2,7 +2,9 @@ import logging
 import time
 
 from moviepy.editor import VideoFileClip
-from tracking.detection.MobileNetDetector import Detector
+# from detection.mobilenet_ssd_detector import Detector
+from detection.yolo_v3_detector import Detector
+
 
 from pipeline.pipeline import DetectAndTrack
 
