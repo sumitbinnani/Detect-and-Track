@@ -3,13 +3,13 @@ import pickle
 
 import cv2
 
-from tracking.tracker import Tracker
+from tracking.base_tracker import BaseTracker
 
 pallete_path = os.path.join(os.path.dirname(__file__), "pallete")
 box_colors = pickle.load(open(pallete_path, "rb"))
 
 
-def draw_box_label(img, tracker: Tracker, class_names, show_label=True):
+def draw_box_label(img, tracker: BaseTracker, class_names, show_label=True):
     """
     Draw Bounding Box
     :param img: input image

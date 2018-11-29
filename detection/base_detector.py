@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from tracking import UnitObject
+from pipeline import UnitObject
 
 
 class BaseDetector(ABC):

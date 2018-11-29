@@ -7,9 +7,10 @@ from sklearn.utils.linear_assignment_ import linear_assignment
 
 import utils.box_utils
 import utils.drawing
-from tracking import UnitObject
-from tracking.detector.base_detector import BaseDetector
-from tracking.tracker import Tracker
+from detection.base_detector import BaseDetector
+from pipeline import UnitObject
+from tracking.base_tracker import BaseTracker
+from tracking.kalman_tracker import KalmanTracker
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.WARN)
@@ -17,14 +18,14 @@ LOGGER.setLevel(logging.WARN)
 
 class DetectAndTrack:
     """
-    Class that connects detector and tracking
+    Class that connects detection and tracking
     """
 
     def __init__(self, detector):
         self.max_age = 4
         self.min_hits = 1
         self.frame_count = 0
-        self.tracker_list: List[Tracker] = []
+        self.tracker_list: List[BaseTracker] = []
         self.track_id_list = deque(list(map(str, range(100))))
         self.detector: BaseDetector = detector
 
@@ -58,7 +59,7 @@ class DetectAndTrack:
             z = unit_detections[det_idx].box
             z = np.expand_dims(z, axis=0).T
             tmp_trk = self.tracker_list[trk_idx]
-            tmp_trk.kalman_filter(z)
+            tmp_trk.predict_and_update(z)
             xx = tmp_trk.x_state.T[0].tolist()
             xx = [xx[0], xx[2], xx[4], xx[6]]
             unit_trackers[trk_idx].box = xx
@@ -71,7 +72,7 @@ class DetectAndTrack:
         for idx in unmatched_dets:
             z = unit_detections[idx].box
             z = np.expand_dims(z, axis=0).T
-            tmp_trk = Tracker()  # Create a new tracker
+            tmp_trk = KalmanTracker()  # Create a new tracker
             x = np.array([[z[0], 0, z[1], 0, z[2], 0, z[3], 0]]).T
             tmp_trk.x_state = x
             tmp_trk.predict_only()

@@ -2,9 +2,9 @@ import logging
 import time
 
 from moviepy.editor import VideoFileClip
+from tracking.detection.MobileNetDetector import Detector
 
-from tracking.detector.MobileNetDetector import Detector
-from tracking.pipeline import DetectAndTrack
+from pipeline.pipeline import DetectAndTrack
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     detect_and_track = DetectAndTrack(detector)
     start = time.time()
     output = 'test_output.mp4'
-    clip1 = VideoFileClip("car25_compressed.mp4").subclip(180, 200)
+    clip1 = VideoFileClip("car25_compressed.mp4").subclip(180, 210)
     clip = clip1.fl_image(detect_and_track.pipeline)
     clip.write_videofile(output, audio=False)
     end = time.time()

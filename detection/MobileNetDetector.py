@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 import tensorflow as tf
 
-from tracking import UnitObject
+from pipeline import UnitObject
 from .base_detector import BaseDetector
 
 LOGGER = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class Detector(BaseDetector):
                     LOGGER.debug('wrong ratio or wrong size')
 
         if len(tmp_car_boxes) == 0:
-            LOGGER.debug('no detector!')
+            LOGGER.debug('no detection!')
 
         self.car_boxes = tmp_car_boxes
 

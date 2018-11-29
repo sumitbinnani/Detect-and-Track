@@ -2,26 +2,20 @@ import numpy as np
 from numpy import dot
 from scipy.linalg import inv, block_diag
 
-from tracking import UnitObject
+from .base_tracker import BaseTracker
 
 
-class Tracker:
+class KalmanTracker(BaseTracker):
     """
     class for Kalman Filter-based tracker
     """
 
     def __init__(self):
-        # Initialize parameters for tracker (history)
-        self.tracking_id = 0  # tracker's id
-        self.unit_object = UnitObject()  # unit tracker
-        self.hits = 0  # number of detector matches
-        self.no_losses = 0  # number of unmatched tracks (track loss)
-
+        super().__init__()
         # Initialize parameters for Kalman Filtering
-        # The state is the (x, y) coordinates of the detector box
+        # The state is the (x, y) coordinates of the detection box
         # state: [up, up_dot, left, left_dot, down, down_dot, right, right_dot]
         # or[up, up_dot, left, left_dot, height, height_dot, width, width_dot]
-        self.x_state = []
         self.dt = 1.  # time interval
 
         # Process matrix, assuming constant velocity model
@@ -59,11 +53,7 @@ class Tracker:
         R_diag_array = self.R_scaler * np.array([self.L, self.L, self.L, self.L])
         self.R = np.diag(R_diag_array)
 
-    def kalman_filter(self, z):
-        """
-        Implement the Kalman Filter, including the predict and the update stages,
-        with the measurement z
-        """
+    def predict_and_update(self, z):
         x = self.x_state
         # Predict
         x = dot(self.F, x)
@@ -76,13 +66,8 @@ class Tracker:
         x += dot(K, y)
         self.P = self.P - dot(K, self.H).dot(self.P)
         self.x_state = x.astype(int)  # convert to integer coordinates
-        # (pixel values)
 
     def predict_only(self):
-        """
-        Implement only the predict stage. This is used for unmatched detections and
-        unmatched tracks
-        """
         x = self.x_state
         # Predict
         x = dot(self.F, x)
