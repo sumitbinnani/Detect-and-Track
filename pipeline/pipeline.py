@@ -10,7 +10,6 @@ import utils.drawing
 from detection.base_detector import BaseDetector
 from pipeline import UnitObject
 from tracking.base_tracker import BaseTracker
-from tracking.kalman_tracker import KalmanTracker
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.WARN)
@@ -21,13 +20,14 @@ class DetectAndTrack:
     Class that connects detection and tracking
     """
 
-    def __init__(self, detector):
+    def __init__(self, detector: BaseDetector, tracker):
         self.max_age = 4
         self.min_hits = 1
         self.frame_count = 0
         self.tracker_list: List[BaseTracker] = []
         self.track_id_list = deque(list(map(str, range(100))))
-        self.detector: BaseDetector = detector
+        self.detector = detector
+        self.tracker = tracker
 
     def pipeline(self, img):
         """
@@ -72,7 +72,7 @@ class DetectAndTrack:
         for idx in unmatched_dets:
             z = unit_detections[idx].box
             z = np.expand_dims(z, axis=0).T
-            tmp_trk = KalmanTracker()  # Create a new tracker
+            tmp_trk = self.tracker()  # Create a new tracker
             x = np.array([[z[0], 0, z[1], 0, z[2], 0, z[3], 0]]).T
             tmp_trk.x_state = x
             tmp_trk.predict_only()

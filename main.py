@@ -2,17 +2,16 @@ import logging
 import time
 
 from moviepy.editor import VideoFileClip
-# from detection.mobilenet_ssd_detector import Detector
-from detection.yolo_v3_detector import Detector
 
-
+from detection.mobilenet_ssd_detector import Detector
 from pipeline.pipeline import DetectAndTrack
+from tracking.kalman_tracker import KalmanTracker
 
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     detector = Detector()
-    detect_and_track = DetectAndTrack(detector)
+    detect_and_track = DetectAndTrack(detector, KalmanTracker)
     start = time.time()
     output = 'test_output.mp4'
     clip1 = VideoFileClip("car25_compressed.mp4").subclip(180, 210)
