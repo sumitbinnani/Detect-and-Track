@@ -2,6 +2,9 @@
 
 The repository contains code for detection and tracking. The code uses Deep Learning Detectors and  Kalman Filter for tracking.
 
+## Sample Video
+[![Watch the video](https://img.youtube.com/vi/dXu7rukxiVo/0.jpg)](https://youtu.be/https://youtu.be/dXu7rukxiVo)
+
 ## Usage
 ```
 python main.py --detector yolov3 --input <input_video> --output <output_path>
